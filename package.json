@@ -1,0 +1,38 @@
+{
+  "name": "@sig-ui/theme",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sig-ui/theme.git"
+  },
+  "homepage": "https://github.com/sig-ui/theme",
+  "bugs": "https://github.com/sig-ui/theme/issues",
+  "description": "Theme schema, defaults, and resolution for SigUI",
+  "author": "SigID, gentix.dev",
+  "keywords": [
+    "sigui",
+    "design-system",
+    "design-tokens",
+    "ui",
+    "theme"
+  ],
+  "files": [
+    "src",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": { "types": "./src/index.d.ts", "default": "./src/index.js" }
+  },
+  "dependencies": {
+    "@sig-ui/core": "workspace:*"
+  },
+  "scripts": {
+    "test": "bun test"
+  }
+}

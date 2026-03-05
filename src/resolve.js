@@ -55,10 +55,7 @@ import {
   resolveAppearance
 } from "./presets.js";
 
-/**
- * @typedef {string | number | boolean | null} PrimitiveValue
- * @typedef {PrimitiveValue | PrimitiveValue[] | Record<string, PrimitiveValue | PrimitiveValue[] | Record<string, PrimitiveValue | PrimitiveValue[]>>} JsonLike
- */
+/** @typedef {any} JsonLike */
 /**
  * @typedef {object} SiguiConfig
  * @property {string} brand
@@ -71,13 +68,15 @@ import {
  * @property {Record<string, string>} [roles]
  * @property {Record<string, JsonLike>} [typography]
  * @property {{ baseUnit?: number, includeExtended?: boolean }} [spacing]
- * @property {{ enabled?: boolean, minViewport?: number, maxViewport?: number, fluidEasing?: "ease-out" | "linear" }} [fluidTokens]
+ * @property {{ enabled?: boolean, minViewport?: number, maxViewport?: number, fluidEasing?: string }} [fluidTokens]
  * @property {{ mode?: "analogous" | "complementary" | "triadic" | "tetradic" | "split-complementary" }} [harmony]
  * @property {number} [tintStrength]
  * @property {Record<string, JsonLike>} [i18n]
  * @property {Record<string, JsonLike>} [cognitiveAccessibility]
  * @property {Record<string, JsonLike>} [performance]
- * @property {{ dir?: string, splitFiles?: boolean }} [output]
+ * @property {boolean} [utilities]
+ * @property {Record<string, any>} [icons]
+ * @property {{ dir?: string, splitFiles?: boolean, minify?: boolean, treeShake?: boolean, typescript?: boolean, json?: boolean }} [output]
  * @property {Record<string, JsonLike>} [brands]
  */
 /**
@@ -87,7 +86,7 @@ import {
  * @property {{ committed: "touch" | "pointer" | "hybrid" }} input
  * @property {{ contrastBoost: number }} ambient
  */
-/** @typedef {Record<string, JsonLike>} ResolvedTheme */
+/** @typedef {any} ResolvedTheme */
 /**
  * mergeWithDefaults.
  * @param {SiguiConfig} raw
@@ -157,10 +156,10 @@ function makePalette(hex) {
  */
 export function resolveTheme(config, context) {
   const resolvedAppearance = resolveAppearance(config.appearance);
-  const resolvedShape = resolveShape(config.shape);
-  const resolvedDepthResult = resolveDepth(config.depth);
-  const resolvedDensity = resolveDensity(config.density);
-  const resolvedMotionPreset = resolveMotion(config.motion);
+  const resolvedShape = resolveShape(/** @type {any} */ (config.shape));
+  const resolvedDepthResult = resolveDepth(/** @type {any} */ (config.depth));
+  const resolvedDensity = resolveDensity(/** @type {any} */ (config.density));
+  const resolvedMotionPreset = resolveMotion(/** @type {any} */ (config.motion));
   const allPalettes = {};
   const brandPalette = makePalette(config.brand);
   allPalettes["brand"] = brandPalette;
@@ -206,7 +205,7 @@ export function resolveTheme(config, context) {
     light: deriveSurfaceScale(brandOklch.h, brandOklch.c, "light", tintStrength),
     dark: deriveSurfaceScale(brandOklch.h, brandOklch.c, "dark", tintStrength)
   };
-  const typoOpts = { ...DEFAULT_CONFIG.typography, ...config.typography };
+  const typoOpts = /** @type {any} */ ({ ...DEFAULT_CONFIG.typography, ...config.typography });
   const useFluid = config.typography?.fluid === true;
   const typeScale = generateTypeScale({
     base: typoOpts.base,
@@ -218,7 +217,7 @@ export function resolveTheme(config, context) {
     lineHeights[step] = computeLineHeight(typeScale[step]).computed;
     letterSpacingMap[step] = computeLetterSpacing(typeScale[step]);
   }
-  const semanticRoleResult = assignSemanticRoles(typeScale);
+  const semanticRoleResult = assignSemanticRoles(typeScale, {});
   const spacingBaseUnit = config.spacing?.baseUnit ?? DEFAULT_CONFIG.spacing.baseUnit;
   const verticalRhythmResult = computeVerticalRhythm({
     baseUnit: spacingBaseUnit
@@ -253,11 +252,11 @@ export function resolveTheme(config, context) {
   };
   const spacingOpts = { ...DEFAULT_CONFIG.spacing, ...config.spacing };
   const useFluidSpacing = config.fluidTokens?.enabled !== false;
-  const fontSpacingEntries = SCALE_KEYS.map((step) => {
+  const fontSpacingEntries = /** @type {Array<[string, number, number]>} */ (SCALE_KEYS.map((step) => {
     const fontSizePx = typeScale[step] * (typoOpts.base ?? 16);
     const lhRatio = parseFloat(lineHeights[step]);
     return [step, fontSizePx, lhRatio];
-  });
+  }));
   const spacing = {
     baseUnit: spacingOpts.baseUnit,
     scale: generateSpacingScale({ baseUnit: spacingOpts.baseUnit, includeExtended: spacingOpts.includeExtended }),

@@ -37,6 +37,7 @@ export const DEFAULT_LIGHT_ROLES = {
  * @returns {RoleMap}
  */
 export function deriveDarkRoles(lightRoles) {
+  /** @type {RoleMap} */
   const dark = {};
   for (const [role, mapping] of Object.entries(lightRoles)) {
     const darkShade = 1000 - mapping.shade;
